@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const connection = require('./database/database');
+const session = require('express-session');
 
 const categoriesController = require('./categories/CategoriesController');
 const articlesController = require('./articles/ArticlesController');
@@ -13,6 +14,11 @@ const User = require('./users/User');
 
 // View engine
 app.set('view engine','ejs');
+
+// Session
+app.use(session({
+  secret: "dchgbnkzdyfgbntrdchgbnkzdyfgbntr", cookie: {maxAge: 300000000} // secret can be any unsense thing
+}));
 
 // Static
 app.use(express.static('public'));
@@ -36,8 +42,7 @@ app.use('/', categoriesController);
 app.use('/', articlesController);
 app.use('/', usersController);
 
-
-app.get("/", (req, res) => {
+app.get('/', (req, res) => {
     Article.findAll({
         order:[
             ['id','DESC']
@@ -50,7 +55,7 @@ app.get("/", (req, res) => {
     });
 })
 
-app.get("/:slug",(req, res) => {
+app.get('/:slug',(req, res) => {
     var slug = req.params.slug;
     Article.findOne({
         where: {
@@ -69,7 +74,7 @@ app.get("/:slug",(req, res) => {
     });
 })
 
-app.get("/category/:slug",(req, res) => {
+app.get('/category/:slug',(req, res) => {
     var slug = req.params.slug;
     Category.findOne({
         where: {
